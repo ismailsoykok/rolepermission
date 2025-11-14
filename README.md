@@ -35,7 +35,7 @@ Rol-izin sistemi: ayrı Role koleksiyonu + kullanıcı koleksiyonunda role refer
 
 Kurulum
 1. Depoyu indirme
-   ```bash
+```bash
 git clone https://github.com/ismailsoykok/rolepermission.git  
 cd rolepermission  
 ```
@@ -43,14 +43,14 @@ cd rolepermission
  ```bash
 cd backend  
 npm install  
-```
+
 
 .env dosyasını oluşturun ve içerisine aşağıdaki temel değişkenleri ekleyin:
-
+```bash
 MONGO_URI=your_mongodb_connection_string  
 JWT_SECRET=your_secret_key  
 PORT=5000  
-
+```
 3. Frontend kurulumu
  ```bash
 cd ../frontend  

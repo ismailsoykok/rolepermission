@@ -35,13 +35,15 @@ Rol-izin sistemi: ayrı Role koleksiyonu + kullanıcı koleksiyonunda role refer
 
 Kurulum
 1. Depoyu indirme
+   ```bash
 git clone https://github.com/ismailsoykok/rolepermission.git  
 cd rolepermission  
-
-2. Backend kurulumu
+```
+3. Backend kurulumu
+ ```bash
 cd backend  
 npm install  
-
+```
 
 .env dosyasını oluşturun ve içerisine aşağıdaki temel değişkenleri ekleyin:
 
@@ -50,29 +52,32 @@ JWT_SECRET=your_secret_key
 PORT=5000  
 
 3. Frontend kurulumu
+ ```bash
 cd ../frontend  
-npm install  
+npm install
+
+ ```
 
 
 .env dosyasına (frontend klasöründe) gerekli değişkenleri ekleyin:
-
+```bash
 REACT_APP_API_URL=http://localhost:5000/api  
-
+```
 4. Projeyi başlatma
 
 Backend için:
-
+```bash
 cd ../backend  
 npm run dev / npm start
-
+```
 
 
 
 Frontend için:
-
+```bash
 cd ../frontend  
 npm start
-
+```
 
 Tarayıcıda http://localhost:3000 adresinden uygulamayı görüntüleyebilirsiniz.
 

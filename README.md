@@ -39,7 +39,7 @@ Kurulum
 git clone https://github.com/ismailsoykok/rolepermission.git  
 cd rolepermission  
 ```
-3. Backend kurulumu
+2. Backend kurulumu
  ```bash
 cd backend  
 npm install  

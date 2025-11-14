@@ -59,9 +59,9 @@ npm install
  ```
 
 
-.env dosyasına (frontend klasöründe) gerekli değişkenleri ekleyin:
+.env dosyasına gerekli değişkenleri ekleyin:
 ```bash
-REACT_APP_API_URL=http://localhost:5000/api  
+REACT_APP_API_URL=http://localhost:5000  
 ```
 4. Projeyi başlatma
 

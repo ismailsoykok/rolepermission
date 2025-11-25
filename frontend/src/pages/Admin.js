@@ -7,8 +7,6 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 axios.defaults.withCredentials = true;
 
-
-
 function PermissionDropdown({ selectedPermissions, onChange }) {
   const [permissions, setPermissions] = useState([]);
   const [search, setSearch] = useState("");
@@ -23,43 +21,45 @@ function PermissionDropdown({ selectedPermissions, onChange }) {
   const filtered = permissions.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative w-full">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200"
         type="button"
       >
-        Dropdown search
-        <svg className="w-2.5 h-2.5 ml-2.5" fill="none" viewBox="0 0 10 6">
-          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1l4 4 4-4" />
+        <span className="truncate">
+          {selectedPermissions.length > 0
+            ? `${selectedPermissions.length} Yetki Seçildi`
+            : "Yetkileri Seç"}
+        </span>
+        <svg className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute left-1/2 -translate-x-1/2 z-10 mt-2 bg-white rounded-lg shadow-sm w-60 dark:bg-gray-700">
-
-          <div className="p-3">
+        <div className="absolute z-50 mt-2 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+          <div className="p-2 border-b border-gray-100">
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search permission"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                placeholder="Yetki ara..."
+                className="w-full pl-9 pr-4 py-2 text-sm bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500/20 text-gray-900 placeholder-gray-400"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
             </div>
           </div>
-          <ul className="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-700 dark:text-gray-200">
+          <ul className="max-h-60 overflow-y-auto p-2 space-y-1">
             {filtered.map((perm) => (
               <li key={perm._id}>
-                <div className="flex items-center p-2 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+                <label className="flex items-center p-2 rounded-lg hover:bg-teal-50 cursor-pointer transition-colors duration-150 group">
                   <input
-                    id={`perm-${perm._id}`}
                     type="checkbox"
                     checked={selectedPermissions.includes(perm._id)}
                     onChange={() =>
@@ -69,17 +69,17 @@ function PermissionDropdown({ selectedPermissions, onChange }) {
                           : [...selectedPermissions, perm._id]
                       )
                     }
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:bg-gray-600 dark:border-gray-500"
+                    className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500 transition duration-150 ease-in-out"
                   />
-                  <label
-                    htmlFor={`perm-${perm._id}`}
-                    className="w-full ml-2 text-sm font-medium text-gray-900 rounded-sm dark:text-gray-300"
-                  >
+                  <span className="ml-3 text-sm font-medium text-gray-700 group-hover:text-teal-700">
                     {perm.name}
-                  </label>
-                </div>
+                  </span>
+                </label>
               </li>
             ))}
+            {filtered.length === 0 && (
+              <li className="p-4 text-center text-sm text-gray-500">Sonuç bulunamadı</li>
+            )}
           </ul>
         </div>
       )}
@@ -87,12 +87,12 @@ function PermissionDropdown({ selectedPermissions, onChange }) {
   );
 }
 
-
-
 function Admin() {
   const navigate = useNavigate();
 
   const [activeBlock, setActiveBlock] = useState("add_employee");
+
+  // Navigation handlers
   const changeBlockEmployee = () => setActiveBlock("add_employee");
   const changeBlockRole = () => setActiveBlock("add_role");
   const changeBlockDepartment = () => setActiveBlock("add_department");
@@ -100,13 +100,11 @@ function Admin() {
   const changeBlockViewJobs = () => setActiveBlock("view_jobs");
   const changeBlockViewUsers = () => setActiveBlock("view_users");
 
-
   const [searchTerm, setSearchTerm] = useState("");
   const [searchCategory, setSearchCategory] = useState("title");
 
   const [searchTerm2, setSearchTerm2] = useState("");
-  const [searchCategory2, setSearchCategory2] = useState("title");
-
+  const [searchCategory2, setSearchCategory2] = useState("username"); // Fixed default value
 
   const statusSteps = ["OPEN", "ASSIGNED", "IN_PROGRESS", "DONE"];
   const getStatusIndex = (status) => statusSteps.indexOf(status);
@@ -116,10 +114,8 @@ function Admin() {
   const [currentPage2, setCurrentPage2] = useState(1);
   const [totalPages2, setTotalPages2] = useState(1);
 
-
   const [jobs, setJobs] = useState([]);
   const [user, setUser] = useState([]);
-
 
   const [departments, setDepartments] = useState([]);
   const [permissions, setPermission] = useState([]);
@@ -128,18 +124,17 @@ function Admin() {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
 
-
+  // Data Fetching Effects
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/admin/getalljobs", {
-        params: {
-          page: currentPage,
-          limit: 3,
-          searchCategory,
-          searchTerm,
-        },
-        withCredentials: true,
-      })
+    axios.get("http://localhost:5000/admin/getalljobs", {
+      params: {
+        page: currentPage,
+        limit: 3,
+        searchCategory,
+        searchTerm,
+      },
+      withCredentials: true,
+    })
       .then((res) => {
         setJobs(res.data.jobs);
         setTotalPages(res.data.pagination.totalPages);
@@ -150,18 +145,16 @@ function Admin() {
       });
   }, [currentPage, searchCategory, searchTerm]);
 
-
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/user", {
-        params: {
-          page: currentPage2,
-          limit: 10,
-          searchCategory: searchCategory2,  // backend tarafında parametre ismi böyle olmalı
-          searchTerm: searchTerm2,
-        },
-        withCredentials: true,
-      })
+    axios.get("http://localhost:5000/user", {
+      params: {
+        page: currentPage2,
+        limit: 10,
+        searchCategory: searchCategory2,
+        searchTerm: searchTerm2,
+      },
+      withCredentials: true,
+    })
       .then((res) => {
         setUser(res.data.users);
         setTotalPages2(res.data.pagination.totalPages);
@@ -169,47 +162,31 @@ function Admin() {
       .catch((err) => {
         toast.error("Kullanıcılar alınamadı");
       });
-  }, [currentPage2, searchCategory2, searchTerm2]);  // bağımlılıklar tek dizi içinde olmalı
-
+  }, [currentPage2, searchCategory2, searchTerm2]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/departments")
+    axios.get("http://localhost:5000/departments")
       .then((res) => setDepartments(res.data))
-      .catch((err) => {
-        toast.error("Departmanlar alınamadı", err);
-        // Hata yönetimi istersen buraya ekleyebilirsin
-      });
+      .catch((err) => toast.error("Departmanlar alınamadı"));
   }, []);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/permission")
+    axios.get("http://localhost:5000/permission")
       .then((res) => setPermission(res.data))
-      .catch((err) => {
-        toast.error("Permission alınamadı", err);
-        // Hata yönetimi istersen buraya ekleyebilirsin
-      });
+      .catch((err) => toast.error("Permission alınamadı"));
   }, []);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/role")
+    axios.get("http://localhost:5000/role")
       .then((res) => setRoles(res.data))
-      .catch((err) => {
-        toast.error("Roller alınamadı", err);
-        // Hata yönetimi istersen buraya ekleyebilirsin
-      });
+      .catch((err) => toast.error("Roller alınamadı"));
   }, []);
 
-
+  // Handlers
   const handleAddRole = async (e) => {
     e.preventDefault();
-
-    // input’un name değeri: floating_first_name
     const roleName = e.target.floating_first_name.value.trim();
 
-    // Basit doğrulama
     if (!roleName) {
       toast.warning("Rol adı boş bırakılamaz.");
       return;
@@ -220,47 +197,40 @@ function Admin() {
     }
 
     try {
-      // Yetkileri ObjectId dizisi olarak gönderiyoruz
       const res = await axios.post("http://localhost:5000/role/add", {
         name: roleName,
         permissions: selectedPermissions,
       }, { withCredentials: true });
 
       toast.success(`"${res.data.name}" rolü başarıyla eklendi!`);
-
-      // Formu sıfırla
       e.target.reset();
       setSelectedPermissions([]);
     } catch (err) {
       console.error(err);
-      const msg =
-        err.response?.data?.message || "Rol eklenirken bir hata oluştu.";
+      const msg = err.response?.data?.message || "Rol eklenirken bir hata oluştu.";
       toast.error(msg);
     }
   };
 
   const handleAddEmployee = async (e) => {
     e.preventDefault();
-
-    // Form‑alanlarını doğrudan topla
     const formData = new FormData(e.target);
-    const username = formData.get("username");   // <input name="username" …>
-    const password = formData.get("password");   // <input name="password" …>
+    const username = formData.get("username");
+    const password = formData.get("password");
 
     try {
-      await axios.post(
-        "http://localhost:5000/user/add",
+      await axios.post("http://localhost:5000/user/add",
         {
-          username,            // string
-          password,            // string
-          department: selectedDepartment, // ObjectId
-          role: selectedRole        // ObjectId
+          username,
+          password,
+          department: selectedDepartment,
+          role: selectedRole
         },
         { withCredentials: true }
       );
 
       toast.success("Çalışan eklendi!");
-      e.target.reset();          // formu sıfırla
+      e.target.reset();
       setSelectedDepartment("");
       setSelectedRole("");
     } catch (err) {
@@ -269,13 +239,8 @@ function Admin() {
     }
   };
 
-
-
-
   const handleAddPermission = async (e) => {
-
     e.preventDefault();
-
     const form = e.target;
     const PermissionName = form.departmentName.value.trim();
 
@@ -295,13 +260,10 @@ function Admin() {
       toast.error(error.response?.data?.message || "Bir hata oluştu");
       console.error(error);
     }
-
-
   };
 
   const handleAddDepartment = async (e) => {
     e.preventDefault();
-
     const form = e.target;
     const departmentName = form.departmentName.value.trim();
 
@@ -324,6 +286,7 @@ function Admin() {
   };
 
   const MySwal = withReactContent(Swal);
+
   const handleDelete = async (id) => {
     const result = await MySwal.fire({
       title: 'Emin misiniz?',
@@ -332,6 +295,8 @@ function Admin() {
       showCancelButton: true,
       confirmButtonText: 'Evet, sil',
       cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#ef4444',
     });
 
     if (!result.isConfirmed) return;
@@ -359,6 +324,8 @@ function Admin() {
       showCancelButton: true,
       confirmButtonText: 'Evet, sil',
       cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#ef4444',
     });
 
     if (!result.isConfirmed) return;
@@ -368,7 +335,7 @@ function Admin() {
 
       if (res.status === 200) {
         setJobs(jobs.filter((job) => job._id !== id));
-        toast.success("Kullanıcı başarıyla silindi.");
+        toast.success("İş başarıyla silindi.");
       } else {
         toast.alert("Silme işlemi başarısız oldu.");
       }
@@ -378,709 +345,617 @@ function Admin() {
     }
   };
 
-
-
   const handleLogout = (e) => {
     axios.post("http://localhost:5000/logout", {}, { withCredentials: true });
     localStorage.removeItem("userToken");
-    window.location.reload(); // sayfayı yeniden yükle
+    window.location.reload();
   };
+
+  // Helper for Sidebar Items
+  const NavItem = ({ id, label, icon, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${activeBlock === id
+        ? "bg-gray-100 text-gray-900 shadow-sm" // Changed from teal-50 to gray-100
+        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+        }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+
   return (
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans">
+      {/* Sidebar */}
+      <aside className="w-72 bg-white border-r border-gray-100 flex flex-col fixed h-full z-30 hidden lg:flex">
+        <div className="p-6 border-b border-gray-50">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 bg-teal-600 rounded-lg flex items-center justify-center shadow-teal-200 shadow-lg">
+              <div className="h-3 w-3 bg-white rounded-full opacity-80"></div>
+            </div>
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+              Admin Panel
+            </h1>
+          </div>
+        </div>
 
-    <div className="admin-page p-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-1">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-4 mt-2">Yönetim</div>
 
+          <NavItem
+            id="add_employee"
+            label="Çalışan Ekle"
+            onClick={changeBlockEmployee}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>}
+          />
+          <NavItem
+            id="add_role"
+            label="Rol Ekle"
+            onClick={changeBlockRole}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>}
+          />
+          <NavItem
+            id="add_department"
+            label="Departman Ekle"
+            onClick={changeBlockDepartment}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>}
+          />
+          <NavItem
+            id="add_permission"
+            label="Yetki Ekle"
+            onClick={changeBlockPermission}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>}
+          />
 
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-4 mt-8">Görüntüleme</div>
 
-      <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600" style={{ height: "60px" }}>
-        <div className="navbar-content flex items-center justify-between px-4 h-full">
-          <h1
-            className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-500"
-            style={{ marginTop: 0, marginBottom: 0 }}
-          >
-            CRM
-          </h1>
+          <NavItem
+            id="view_jobs"
+            label="İşleri Görüntüle"
+            onClick={changeBlockViewJobs}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>}
+          />
+          <NavItem
+            id="view_users"
+            label="Kullanıcıları Görüntüle"
+            onClick={changeBlockViewUsers}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
+          />
+        </div>
 
+        <div className="p-4 border-t border-gray-100">
           <button
             onClick={handleLogout}
-            style={{ width: '100px', height: '35px' }}
-            className="text-white bg-red-400 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-md text-sm px-3 py-1.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors duration-200"
           >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
             Çıkış Yap
           </button>
-
-
         </div>
-      </nav>
+      </aside>
 
+      {/* Main Content */}
+      <main className="flex-1 lg:ml-72 p-8 overflow-y-auto">
+        <div className="max-w-5xl mx-auto">
 
-
-      {/* navbar yüksekliği kadar boşluk bırak */}
-      <div style={{ paddingTop: "60px" }}>
-        <div className="flex justify-center mt-4">
-          <div className="inline-flex rounded-md shadow-xs" role="group">
-            {/* Butonlar */}
-            <button
-              onClick={changeBlockEmployee}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-s-lg hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Çalışan Ekle
-            </button>
-            <button
-              onClick={changeBlockDepartment}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-t border-b border-gray-900 hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Departman Ekle
-            </button>
-            <button
-              onClick={changeBlockRole}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-t border-b border-gray-900 hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Rol Ekle
-            </button>
-            <button
-              onClick={changeBlockPermission}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-t border-b border-gray-900 hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Yetki Ekle
-            </button>
-            <button
-              onClick={changeBlockViewJobs}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border-t border-b border-gray-900 hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              İşleri Görüntüle
-            </button>
-            <button
-              onClick={changeBlockViewUsers}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-e-lg hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Kullanıcıları Görüntüle
-            </button>
-          </div>
-        </div>
-
-
-
-
-        {activeBlock === "add_employee" && (
-          <div className="flex justify-center items-start mt-10">
-            <form onSubmit={handleAddEmployee} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md space-y-4">
-              <label htmlFor="website-admin" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Username (Eşsiz bir yapıda olmalıdır)
-              </label>
-              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 px-3">
-                <svg
-                  className="w-5 h-5 text-gray-500 dark:text-gray-400"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
-                </svg>
-                <input
-                  name="username"
-                  type="text"
-                  id="website-admin"
-                  className="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 dark:text-white placeholder-gray-400 p-2.5 text-sm"
-                  placeholder="Çalışan için bir username ekleyiniz"
-                />
-              </div>
-
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Şifre
-              </label>
-              <input
-                name="password"
-                type="password"
-                id="password"
-                className="w-full p-2.5 text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="•••••••••"
-                required
-              />
-              <select
-                value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}  // Burada setSelectedDepartment kullanılacak
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="">Departman Seçiniz</option>
-                {departments.map((dep) => (
-                  <option key={dep._id} value={dep._id}>
-                    {dep.name}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}  // Burada setSelectedDepartment kullanılacak
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="">Rol seçiniz</option>
-                {roles.map((rol) => (
-                  <option key={rol._id} value={rol._id}>
-                    {rol.name}
-                  </option>
-                ))}
-              </select>
-
-
-              <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Çalışanı Ekle</button>
-
-
-            </form>
-          </div>
-
-        )}
-
-        {activeBlock === "add_role" && (
-          <div className="flex justify-center items-center  pt-4">
-            <form onSubmit={handleAddRole} className="flex flex-col gap-6 w-80 p-6 bg-white rounded-lg shadow-md border dark:bg-gray-800 dark:border-gray-700">
-
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white text-center">
-                Rol Ekle
-              </h2>
-
-              <PermissionDropdown
-                selectedPermissions={selectedPermissions}
-                onChange={setSelectedPermissions}
-              />
-
-              <div className="relative z-0 w-full group">
-                <input
-                  type="text"
-                  name="floating_first_name"
-                  id="floating_first_name"
-                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                  placeholder=" "
-                  required
-                />
-                <label
-                  htmlFor="floating_first_name"
-                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:scale-75 peer-focus:-translate-y-6"
-                >
-                  Rol Adı
-                </label>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Rolü Ekle
-              </button>
-            </form>
-          </div>
-        )}
-
-
-        {activeBlock === "add_department" && (
-          <div className="flex justify-center mt-6">
-            <form
-              onSubmit={handleAddDepartment}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md space-y-4"
-            >
-              <label
-                htmlFor="department-name"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Departman Ekleyin
-              </label>
-
-              <input
-                type="text"
-                id="department-name"
-                name="departmentName"
-                placeholder="Departman adı"
-                required
-                className="block w-full p-2 text-gray-900 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-
-              <button
-                type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Departmanı Ekle
-              </button>
-            </form>
-          </div>
-        )}
-
-
-        {activeBlock === "add_permission" && (
-          <div className="flex justify-center mt-6">
-            <form
-              onSubmit={handleAddPermission}
-              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md space-y-4"
-            >
-              <label
-                htmlFor="department-name"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Yetki Ekleyin
-              </label>
-
-              <input
-                type="text"
-                id="department-name"
-                name="departmentName"
-                placeholder="Departman adı"
-                required
-                className="block w-full p-2 text-gray-900 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-
-              <button
-                type="submit"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Yetki Ekle
-              </button>
-            </form>
-
-
-
-
-
-
-          </div>
-        )}
-
-        {activeBlock === "view_jobs" && (
-          <div className="flex flex-col items-center pt-6 px-4 space-y-6">
-
-            <div className="w-full max-w-2xl flex">
-              {/* Kategori seçimi (select) */}
-              <select
-                value={searchCategory}
-                onChange={(e) => setSearchCategory(e.target.value)}
-                className="w-40 py-3 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-l-lg
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="title">BAŞLIK</option>
-                <option value="personnel">ATANAN</option>
-                <option value="content">İÇERİK</option>
-              </select>
-
-              {/* Arama kutusu */}
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg
-                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
+          {/* Header */}
+          <header className="mb-10 bg-gradient-to-r from-teal-50 via-white to-cyan-50 rounded-2xl p-8 border border-gray-100 shadow-sm">
+            <div className="flex items-start gap-4">
+              {/* Icon Section */}
+              <div className="flex-shrink-0">
+                <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
+                  {activeBlock === "add_employee" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                  )}
+                  {activeBlock === "add_role" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  )}
+                  {activeBlock === "add_department" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  )}
+                  {activeBlock === "add_permission" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                  )}
+                  {activeBlock === "view_jobs" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                  )}
+                  {activeBlock === "view_users" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  )}
                 </div>
-                <input
-                  type="search"
-                  id="default-search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={`${searchCategory === "title" ? "Başlığa" : searchCategory === "personnel" ? "Personele" : "İçeriğe"} göre ara...`}
-                  className="block w-full py-3 pl-10 pr-4 text-sm text-gray-900 border border-gray-300 rounded-r-lg
-                 bg-gray-50 focus:ring-blue-500 focus:border-blue-500
-                 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-                 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
+              </div>
+
+              {/* Text Content */}
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-teal-900 to-cyan-900 bg-clip-text text-transparent tracking-tight">
+                  {activeBlock === "add_employee" && "Yeni Çalışan Ekle"}
+                  {activeBlock === "add_role" && "Yeni Rol Tanımla"}
+                  {activeBlock === "add_department" && "Departman Oluştur"}
+                  {activeBlock === "add_permission" && "Yetki Tanımla"}
+                  {activeBlock === "view_jobs" && "İş Listesi ve Durumları"}
+                  {activeBlock === "view_users" && "Kullanıcı Yönetimi"}
+                </h2>
+                <p className="mt-3 text-gray-600 leading-relaxed">
+                  {activeBlock === "add_employee" && "Sisteme yeni bir personel kaydı oluşturun."}
+                  {activeBlock === "add_role" && "Kullanıcı rolleri ve yetkilerini yapılandırın."}
+                  {activeBlock === "add_department" && "Organizasyon şemasına yeni bir birim ekleyin."}
+                  {activeBlock === "add_permission" && "Sistem genelinde yeni erişim izinleri tanımlayın."}
+                  {activeBlock === "view_jobs" && "Tüm işleri, atamaları ve ilerleme durumlarını takip edin."}
+                  {activeBlock === "view_users" && "Sistemdeki tüm kullanıcıları görüntüleyin ve yönetin."}
+                </p>
+
+                {/* Breadcrumb */}
+                <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Admin Panel</span>
+                  <span>/</span>
+                  <span className="text-teal-600 font-medium">
+                    {activeBlock === "add_employee" && "Çalışan Ekle"}
+                    {activeBlock === "add_role" && "Rol Ekle"}
+                    {activeBlock === "add_department" && "Departman Ekle"}
+                    {activeBlock === "add_permission" && "Yetki Ekle"}
+                    {activeBlock === "view_jobs" && "İşler"}
+                    {activeBlock === "view_users" && "Kullanıcılar"}
+                  </span>
+                </div>
               </div>
             </div>
+          </header>
 
+          {/* Content Blocks */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-            {/* Kartlar */}
-            {jobs.map((job) => (
-              <div
-                key={job._id}
-                className="w-full max-w-4xl border border-gray-300 dark:border-gray-600 rounded-lg p-6 flex flex-col md:flex-row items-center bg-white dark:bg-gray-800 shadow-sm"
-              >
-                {/* Görsel */}
-                <div className="w-full md:w-1/2 flex justify-center items-center mb-4 md:mb-0">
-                  {(() => {
-                    const attachment = job.attachments?.[0];
-
-                    if (!attachment) {
-                      return (
-                        <img
-                          className="rounded-sm object-cover w-full h-48 sm:w-96"
-                          src="https://via.placeholder.com/300x200"
-                          alt="Varsayılan görsel"
-                        />
-                      );
-                    }
-
-                    const fileUrl = `data:${attachment.mimetype};base64,${attachment.data}`;
-
-                    if (attachment.mimetype.startsWith("image/")) {
-                      return (
-                        <img
-                          src={fileUrl}
-                          alt={attachment.filename}
-                          className="rounded-sm object-cover w-full h-48 sm:w-96"
-                        />
-                      );
-                    } else if (attachment.mimetype === "application/pdf") {
-                      return (
-                        <embed
-                          src={fileUrl}
-                          type="application/pdf"
-                          width="100%"
-                          height="400px"
-                          className="rounded-sm"
-                        />
-                      );
-                    } else {
-                      return (
-                        <div className="flex flex-col items-center justify-center w-full h-48 sm:w-96 bg-gray-100 dark:bg-gray-700 rounded-sm p-4 text-center">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{attachment.filename}</p>
-                          <a
-                            href={fileUrl}
-                            download={attachment.filename}
-                            className="text-blue-600 hover:underline dark:text-blue-400"
-                          >
-                            Dosyayı indir
-                          </a>
-                        </div>
-                      );
-                    }
-                  })()}
-                </div>
-
-
-                {/* Metin + Adım Çubuğu */}
-                <div className="w-full md:w-1/2 pl-0 md:pl-6">
-                  <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
-                    {job.title}
-                  </h2>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-                    {job.description || "Açıklama bulunamadı."}
-                  </p>
-
-                  {/* Aşama Çubuğu */}
-                  <ol className="flex items-center w-full">
-                    {statusSteps.map((step, index) => {
-                      const isDone = getStatusIndex(job.status) >= index;
-
-                      return (
-                        <li
-                          key={step}
-                          className={`flex flex-col items-center w-full ${index !== statusSteps.length - 1
-                            ? "after:content-[''] after:w-full after:h-1 after:border-b after:border-4 after:inline-block " +
-                            (isDone
-                              ? "after:border-blue-600 dark:after:border-blue-400"
-                              : "after:border-gray-300 dark:after:border-gray-600")
-                            : ""
-                            }`}
-                        >
-                          {/* Step adı */}
-                          <span className="mb-1 text-xs text-gray-500 dark:text-gray-400">{step}</span>
-
-                          {/* Daire */}
-                          <span
-                            className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${isDone
-                              ? (index === statusSteps.length - 1
-                                ? "bg-green-600 text-white"    // Son tamamlanan adım yeşil
-                                : "bg-blue-600 text-white")    // Diğer tamamlananlar mavi
-                              : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-300"
-                              }`}
-
-                          >
-                            {isDone ? (
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            ) : (
-                              index + 1
-                            )}
-                          </span>
-
-                          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.881 16H7.119a1 1 0 0 1-.772-1.636l4.881-5.927a1 1 0 0 1 1.544 0l4.88 5.927a1 1 0 0 1-.77 1.636Z" />
-                          </svg>
-
-                        </li>
-                      );
-                    })}
-                  </ol>
-                  <div className="text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    Departman  : {job.department.name}
-                  </div>
-                  <div className="text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    İşi Gönderen : {job.createdBy.username}
-                  </div>
-                  {job.assignedTo === null ? (
-                    <div className="text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                      Atanan: {"Yok"}
+            {/* Add Employee Form */}
+            {activeBlock === "add_employee" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+                <form onSubmit={handleAddEmployee} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Kullanıcı Adı</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <input
+                        name="username"
+                        type="text"
+                        className="block w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                        placeholder="ornek_kullanici"
+                        required
+                      />
                     </div>
-                  ) : (<div className="text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    Atanan: {job.assignedTo.username || job.assignedTo.name || "Bilinmiyor"}
-                  </div>)}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Şifre</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      </div>
+                      <input
+                        name="password"
+                        type="password"
+                        className="block w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                        placeholder="•••••••••"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Departman</label>
+                      <select
+                        value={selectedDepartment}
+                        onChange={(e) => setSelectedDepartment(e.target.value)}
+                        className="block w-full px-4 py-3 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-xl shadow-sm hover:shadow-md focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all duration-200 font-medium text-gray-700 cursor-pointer"
+                      >
+                        <option value="">Seçiniz...</option>
+                        {departments.map((dep) => (
+                          <option key={dep._id} value={dep._id}>{dep.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Rol</label>
+                      <select
+                        value={selectedRole}
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                        className="block w-full px-4 py-3 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-300 rounded-xl shadow-sm hover:shadow-md focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all duration-200 font-medium text-gray-700 cursor-pointer"
+                      >
+                        <option value="">Seçiniz...</option>
+                        {roles.map((rol) => (
+                          <option key={rol._id} value={rol._id}>{rol.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <button type="submit" className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+                      Çalışanı Kaydet
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Add Role Form */}
+            {activeBlock === "add_role" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-xl mx-auto">
+                <form onSubmit={handleAddRole} className="space-y-8">
+                  <div className="text-center mb-8">
+                    <div className="mx-auto h-12 w-12 bg-teal-100 rounded-full flex items-center justify-center mb-4">
+                      <svg className="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900">Rol Detayları</h3>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Rol Adı</label>
+                    <input
+                      type="text"
+                      name="floating_first_name"
+                      className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                      placeholder="Örn: Süper Yönetici"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Yetkiler</label>
+                    <PermissionDropdown
+                      selectedPermissions={selectedPermissions}
+                      onChange={setSelectedPermissions}
+                    />
+                    <p className="mt-2 text-xs text-gray-500">Bu role atanacak yetkileri listeden seçiniz.</p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    Rolü Oluştur
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Add Department Form */}
+            {activeBlock === "add_department" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-lg mx-auto">
+                <div className="text-center mb-8">
+                  <div className="mx-auto h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">Departman Bilgileri</h3>
+                </div>
+                <form onSubmit={handleAddDepartment} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Departman Adı</label>
+                    <input
+                      type="text"
+                      name="departmentName"
+                      className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                      placeholder="Örn: İnsan Kaynakları"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    Ekle
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Add Permission Form */}
+            {activeBlock === "add_permission" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-lg mx-auto">
+                <div className="text-center mb-8">
+                  <div className="mx-auto h-12 w-12 bg-cyan-100 rounded-full flex items-center justify-center mb-4">
+                    <svg className="h-6 w-6 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">Yetki Tanımlama</h3>
+                </div>
+                <form onSubmit={handleAddPermission} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Yetki Adı</label>
+                    <input
+                      type="text"
+                      name="departmentName"
+                      className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                      placeholder="Örn: user_delete"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    Ekle
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* View Jobs */}
+            {activeBlock === "view_jobs" && (
+              <div className="space-y-6">
+                {/* Filters */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+                  <select
+                    value={searchCategory}
+                    onChange={(e) => setSearchCategory(e.target.value)}
+                    className="px-4 py-2.5 bg-gradient-to-br from-white to-gray-50 border border-gray-300 rounded-lg text-sm shadow-sm hover:shadow focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all duration-200 font-medium text-gray-700 cursor-pointer"
+                  >
+                    <option value="title">Başlık</option>
+                    <option value="personnel">Atanan</option>
+                    <option value="content">İçerik</option>
+                  </select>
+                  <div className="relative flex-1">
+                    <input
+                      type="search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Ara..."
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                    />
+                    <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
                 </div>
 
-              <button onClick={() => handleDeleteJob(job._id)} className="inline-flex items-center justify-center w-10 h-10 bg-transparent border-none outline-none hover:bg-transparent focus:outline-none"> <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
-</svg></button> 
+                {/* Jobs List */}
+                <div className="space-y-4">
+                  {jobs.map((job) => (
+                    <div key={job._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                      <div className="flex flex-col md:flex-row">
+                        {/* Image/Attachment Section */}
+                        <div className="w-full md:w-64 h-48 md:h-auto bg-gray-100 flex-shrink-0 relative">
+                          {(() => {
+                            const attachment = job.attachments?.[0];
+                            if (!attachment) {
+                              return (
+                                <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-gray-50">
+                                  <svg className="w-12 h-12 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm text-gray-400 font-medium">Dosya Yok</span>
+                                </div>
+                              );
+                            }
+                            const fileUrl = `data:${attachment.mimetype};base64,${attachment.data}`;
+                            if (attachment.mimetype.startsWith("image/")) {
+                              return <img src={fileUrl} alt={attachment.filename} className="w-full h-full object-cover" />;
+                            } else {
+                              return (
+                                <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                                  <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                  <span className="text-xs text-gray-500 truncate w-full">{attachment.filename}</span>
+                                </div>
+                              );
+                            }
+                          })()}
+                        </div>
 
-              </div>
-            ))}
+                        {/* Content Section */}
+                        <div className="p-6 flex-1 flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-start">
+                              <h3 className="text-lg font-bold text-gray-900 mb-2">{job.title}</h3>
+                              <button onClick={() => handleDeleteJob(job._id)} className="text-gray-400 hover:text-red-600 transition-colors p-1">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              </button>
+                            </div>
+                            <p className="text-gray-600 text-sm mb-6 line-clamp-2">{job.description || "Açıklama yok."}</p>
+                          </div>
 
-            {/* Pagination */}
-            <nav className="flex items-center justify-center mt-4 mb-6">
-              <ul className="inline-flex -space-x-px text-sm">
-                {/* Önceki */}
-                <li>
+                          {/* Progress Steps */}
+                          <div className="mb-6">
+                            <div className="flex items-center justify-between w-full relative">
+                              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-100 -z-10"></div>
+                              {statusSteps.map((step, index) => {
+                                const isDone = getStatusIndex(job.status) >= index;
+                                return (
+                                  <div key={step} className="flex flex-col items-center bg-white px-2">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 ${isDone ? 'bg-teal-600 text-white shadow-lg shadow-teal-200' : 'bg-gray-100 text-gray-400'}`}>
+                                      {isDone ? '✓' : index + 1}
+                                    </div>
+                                    <span className={`text-[10px] mt-1 font-medium ${isDone ? 'text-teal-600' : 'text-gray-400'}`}>{step}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Footer Info */}
+                          <div className="flex items-center gap-4 text-xs text-gray-500 border-t border-gray-50 pt-4">
+                            <div className="flex items-center gap-1">
+                              <span className="font-semibold">Departman:</span> {job.department?.name}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="font-semibold">Gönderen:</span> {job.createdBy?.username}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="font-semibold">Atanan:</span>
+                              <span className="bg-gray-100 px-2 py-0.5 rounded-full text-gray-700">
+                                {job.assignedTo?.username || job.assignedTo?.name || "Yok"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center gap-2 mt-8">
                   <button
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Önceki
                   </button>
-                </li>
-
-                {/* Sayfa Numaraları */}
-                {[...Array(totalPages)].map((_, i) => (
-                  <li key={i}>
-                    <button
-                      onClick={() => setCurrentPage(i + 1)}
-                      className={`px-3 py-2 leading-tight border ${currentPage === i + 1
-                        ? "text-white bg-blue-600 border-blue-600"
-                        : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                        }`}
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                ))}
-
-                {/* Sonraki */}
-                <li>
+                  <span className="px-4 py-2 text-sm text-gray-600">Sayfa {currentPage} / {totalPages}</span>
                   <button
                     disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Sonraki
                   </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-
-
-        )}
-
-        {activeBlock === "view_users" && (
-          <div>
-            {/* Arama alanı */}
-            <div className="w-full max-w-2xl flex justify-center">
-              {/* Kategori seçimi (select) */}
-              <select
-                value={searchCategory2}
-                onChange={(e) => setSearchCategory2(e.target.value)}
-                className="w-40 py-3 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-l-lg
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="username">Kullanıcı Adı</option>
-                <option value="department">Departman </option>
-
-              </select>
-
-              {/* Arama kutusu */}
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg
-                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
                 </div>
-                <input
-                  type="search"
-                  id="default-search"
-                  value={searchTerm2}
-                  onChange={(e) => setSearchTerm2(e.target.value)}
-                  placeholder={`${searchCategory2 === "username"
-                    ? "Kullanıcı adına"
-                    : "Departmana"
-                    } göre ara...`}
-
-                  className="block w-full py-3 pl-10 pr-4 text-sm text-gray-900 border border-gray-300 rounded-r-lg
-                 bg-gray-50 focus:ring-blue-500 focus:border-blue-500
-                 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-                 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
               </div>
-            </div>
+            )}
 
-            <div className="overflow-x-auto mt-6">
-              <table className="min-w-full text-sm text-left text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
-                  <tr>
-                    <th scope="col" className="px-6 py-3">Kullanıcı Adı</th>
-                    <th scope="col" className="px-6 py-3">Rol</th>
-                    <th scope="col" className="px-6 py-3">Departman</th>
-                    <th scope="col" className="px-6 py-3">Durum</th>
-                    <th scope="col" className="px-6 py-3 text-center">İşlemler</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {user?.map((u) => (
-                    <tr key={u._id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {u.username}
-                      </td>
-                      <td className="px-6 py-4">
-                        {u.role?.name || "—"}
-                      </td>
-                      <td className="px-6 py-4">
-                        {u.department?.name || "—"}
-                      </td>
-                      <td className="px-6 py-4">
-                        {u.isActive ? (
-                          <span className="text-green-600 font-semibold">✓ Aktif</span>
-                        ) : (
-                          <span className="text-red-600 font-semibold">✗ Pasif</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 flex justify-center gap-1">
-                        <button
-                          onClick={() => navigate(`/user/edit/${u._id}`)}
-                          className="px-1 py-0.5 text-[10px] font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
-                        >
-                          Düzenle
-                        </button>
-                        <button onClick={() => handleDelete(u._id)} className="px-1 py-0.5 text-[10px] font-medium text-white bg-red-600 rounded hover:bg-red-700">
-                          Sil
-                        </button>
-                      </td>
+            {/* View Users */}
+            {activeBlock === "view_users" && (
+              <div className="space-y-6">
+                {/* Filters */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+                  <select
+                    value={searchCategory2}
+                    onChange={(e) => setSearchCategory2(e.target.value)}
+                    className="px-4 py-2.5 bg-gradient-to-br from-white to-gray-50 border border-gray-300 rounded-lg text-sm shadow-sm hover:shadow focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all duration-200 font-medium text-gray-700 cursor-pointer"
+                  >
+                    <option value="username">Kullanıcı Adı</option>
+                    <option value="department">Departman</option>
+                  </select>
+                  <div className="relative flex-1">
+                    <input
+                      type="search"
+                      value={searchTerm2}
+                      onChange={(e) => setSearchTerm2(e.target.value)}
+                      placeholder="Kullanıcı ara..."
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                    />
+                    <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
 
+                {/* Users Table */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left text-gray-500">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-100">
+                        <tr>
+                          <th className="px-6 py-4 font-semibold">Kullanıcı Adı</th>
+                          <th className="px-6 py-4 font-semibold">Rol</th>
+                          <th className="px-6 py-4 font-semibold">Departman</th>
+                          <th className="px-6 py-4 font-semibold">Durum</th>
+                          <th className="px-6 py-4 font-semibold text-center">İşlemler</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {user?.map((u) => (
+                          <tr key={u._id} className="bg-white border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 font-medium text-gray-900">{u.username}</td>
+                            <td className="px-6 py-4">
+                              <span className="bg-teal-50 text-teal-700 px-2 py-1 rounded-md text-xs font-medium border border-teal-100">
+                                {u.role?.name || "—"}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">{u.department?.name || "—"}</td>
+                            <td className="px-6 py-4">
+                              {u.isActive ? (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                  Aktif
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                  Pasif
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex justify-center gap-2">
+                                <button
+                                  onClick={() => navigate(`/user/edit/${u._id}`)}
+                                  className="p-2 text-gray-500 hover:text-teal-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                  title="Düzenle"
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(u._id)}
+                                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                  title="Sil"
+                                >
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
-
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-
-
-
-
-
-
-
-            {/* Pagination */}
-            <nav className="flex items-center justify-center mt-4 mb-6">
-              <ul className="inline-flex -space-x-px text-sm">
-                {/* Önceki */}
-                <li>
+                {/* Pagination */}
+                <div className="flex justify-center gap-2 mt-8">
                   <button
                     disabled={currentPage2 === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    onClick={() => setCurrentPage2(p => Math.max(p - 1, 1))}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Önceki
                   </button>
-                </li>
-
-                {/* Sayfa Numaraları */}
-                {[...Array(totalPages2)].map((_, i) => (
-                  <li key={i}>
-                    <button
-                      onClick={() => setCurrentPage2(i + 1)}
-                      className={`px-3 py-2 leading-tight border ${currentPage2 === i + 1
-                        ? "text-white bg-blue-600 border-blue-600"
-                        : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                        }`}
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                ))}
-
-                {/* Sonraki */}
-                <li>
+                  <span className="px-4 py-2 text-sm text-gray-600">Sayfa {currentPage2} / {totalPages2}</span>
                   <button
                     disabled={currentPage2 === totalPages2}
-                    onClick={() => setCurrentPage2((p) => Math.min(p + 1, totalPages2))}
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    onClick={() => setCurrentPage2(p => Math.min(p + 1, totalPages2))}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Sonraki
                   </button>
-                </li>
-              </ul>
-            </nav>
+                </div>
+              </div>
+            )}
+
           </div>
-
-
-
-        )}
-
-
-
-
-
-
-
-      </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        </div>
+      </main>
     </div>
   );
 }
 
 export default Admin;
+

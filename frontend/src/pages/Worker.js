@@ -55,13 +55,14 @@ function Worker() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/worker/jobs`,  {
+      .get(`http://localhost:5000/worker/jobs`, {
         params: {
           page: currentPage,
           limit: 3,
           searchCategory,
           searchTerm,
-        }}, { withCredentials: true })
+        }
+      }, { withCredentials: true })
       .then((res) => {
         console.log("Gelen response:", res.data); // 👈 Buraya log ekledik
         setJobs(res.data.jobs);
@@ -74,13 +75,14 @@ function Worker() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/worker/jobsfree`,  {
+      .get(`http://localhost:5000/worker/jobsfree`, {
         params: {
           page: currentPage,
           limit: 3,
           searchCategory: searchCategory2,  // backend tarafında parametre ismi böyle olmalı
           searchTerm: searchTerm2,
-        }}, { withCredentials: true })
+        }
+      }, { withCredentials: true })
       .then((res) => {
         console.log("Gelen response:", res.data); // 👈 Buraya log ekledik
         setJobsfree(res.data.jobs);
@@ -116,6 +118,8 @@ function Worker() {
       showCancelButton: true,
       confirmButtonText: 'Evet, devam et',
       cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#14b8a6',
+      cancelButtonColor: '#ef4444',
     });
 
     if (result.isConfirmed) {
@@ -144,6 +148,8 @@ function Worker() {
       showCancelButton: true,
       confirmButtonText: 'Evet, devam et',
       cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#14b8a6',
+      cancelButtonColor: '#ef4444',
     });
 
     if (result.isConfirmed) {
@@ -171,519 +177,368 @@ function Worker() {
     }
   };
 
-
+  // Helper for Sidebar Items
+  const NavItem = ({ id, label, icon, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${activeBlock === id
+        ? "bg-gray-100 text-gray-900 shadow-sm"
+        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+        }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
 
   return (
-    <div>
-      <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600" style={{ height: "60px" }}>
-        <div className="navbar-content flex items-center justify-between px-4 h-full">
-          <h1
-            className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-500"
-            style={{ marginTop: 0, marginBottom: 0 }}
-          >
-            CRM
-          </h1>
+    <div className="flex min-h-screen bg-[#F8FAFC] font-sans">
+      {/* Sidebar */}
+      <aside className="w-72 bg-white border-r border-gray-100 flex flex-col fixed h-full z-30 hidden lg:flex">
+        <div className="p-6 border-b border-gray-50">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 bg-teal-600 rounded-lg flex items-center justify-center shadow-teal-200 shadow-lg">
+              <div className="h-3 w-3 bg-white rounded-full opacity-80"></div>
+            </div>
+            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+              Worker Panel
+            </h1>
+          </div>
+        </div>
 
+        <div className="flex-1 overflow-y-auto p-4 space-y-1">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-4 mt-2">İşlerim</div>
+
+          <NavItem
+            id="view_myjobs"
+            label="Benim İşlerim"
+            onClick={changeBlockMyJobs}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>}
+          />
+          <NavItem
+            id="view_freejobs"
+            label="Serbest İşler"
+            onClick={changeBlockFreeJobs}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>}
+          />
+        </div>
+
+        <div className="p-4 border-t border-gray-100">
           <button
             onClick={handleLogout}
-            style={{ width: '100px', height: '35px' }}
-            className="text-white bg-red-400 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-md text-sm px-3 py-1.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors duration-200"
           >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
             Çıkış Yap
           </button>
-
-
         </div>
-      </nav>
+      </aside>
 
-      <div style={{ paddingTop: "60px", paddingRight: "10px" }}>
-        <div className="flex justify-center mt-4">
-          <div className="inline-flex rounded-md shadow-xs" role="group">
-            <button
-              onClick={changeBlockMyJobs}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-s-lg hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Benim İşlerim
-            </button>
-            <button
-              onClick={changeBlockFreeJobs}
-              type="button"
-              className="w-36 px-4 py-2 text-sm font-medium text-gray-900 bg-transparent border border-gray-900 rounded-e-lg hover:bg-gray-700 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-700 focus:text-white dark:border-white dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:bg-gray-600"
-            >
-              Serbest İşler
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 lg:ml-72 p-8 overflow-y-auto">
+        <div className="max-w-5xl mx-auto">
 
-      {activeBlock === "view_myjobs" && (
-        <div className="flex flex-col items-center pt-6 px-4 space-y-6">
-
-          <div className="w-full max-w-2xl flex">
-            {/* Kategori seçimi (select) */}
-            <select
-              value={searchCategory}
-              onChange={(e) => setSearchCategory(e.target.value)}
-              className="w-40 py-3 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-l-lg
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="title">BAŞLIK</option>
-             
-              <option value="content">İÇERİK</option>
-            </select>
-
-            {/* Arama kutusu */}
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
-              <input
-                type="search"
-                id="default-search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={`${searchCategory === "title" ? "Başlığa" : searchCategory === "content" ? "İçeriğe" : "İçeriğe"} göre ara...`}
-                className="block w-full py-3 pl-10 pr-4 text-sm text-gray-900 border border-gray-300 rounded-r-lg
-                 bg-gray-50 focus:ring-blue-500 focus:border-blue-500
-                 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-                 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Kartlar */}
-          {jobs.map((job) => (
-            <div
-              key={job._id}
-              className="w-full max-w-4xl border border-gray-300 dark:border-gray-600 rounded-lg p-6 flex flex-col md:flex-row items-center bg-white dark:bg-gray-800 shadow-sm"
-            >
-              {/* Görsel */}
-              <div className="w-full md:w-1/2 flex justify-center items-center mb-4 md:mb-0">
-                {(() => {
-                  const attachment = job.attachments?.[0];
-
-                  if (!attachment) {
-                    return (
-                      <img
-                        className="rounded-sm object-cover w-full h-48 sm:w-96"
-                        src="https://via.placeholder.com/300x200"
-                        alt="Varsayılan görsel"
-                      />
-                    );
-                  }
-
-                  const fileUrl = `data:${attachment.mimetype};base64,${attachment.data}`;
-
-                  if (attachment.mimetype.startsWith("image/")) {
-                    return (
-                      <img
-                        src={fileUrl}
-                        alt={attachment.filename}
-                        className="rounded-sm object-cover w-full h-48 sm:w-96"
-                      />
-                    );
-                  } else if (attachment.mimetype === "application/pdf") {
-                    return (
-                      <embed
-                        src={fileUrl}
-                        type="application/pdf"
-                        width="100%"
-                        height="400px"
-                        className="rounded-sm"
-                      />
-                    );
-                  } else {
-                    return (
-                      <div className="flex flex-col items-center justify-center w-full h-48 sm:w-96 bg-gray-100 dark:bg-gray-700 rounded-sm p-4 text-center">
-                        <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{attachment.filename}</p>
-                        <a
-                          href={fileUrl}
-                          download={attachment.filename}
-                          className="text-blue-600 hover:underline dark:text-blue-400"
-                        >
-                          Dosyayı indir
-                        </a>
-                      </div>
-                    );
-                  }
-                })()}
+          {/* Header */}
+          <header className="mb-10 bg-gradient-to-r from-teal-50 via-white to-cyan-50 rounded-2xl p-8 border border-gray-100 shadow-sm">
+            <div className="flex items-start gap-4">
+              {/* Icon Section */}
+              <div className="flex-shrink-0">
+                <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-200">
+                  {activeBlock === "view_myjobs" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  )}
+                  {activeBlock === "view_freejobs" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  )}
+                </div>
               </div>
 
-
-              {/* Metin + Adım Çubuğu */}
-              <div className="w-full md:w-1/2 pl-0 md:pl-6">
-                <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
-                  {job.title}
+              {/* Text Content */}
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-teal-900 to-cyan-900 bg-clip-text text-transparent tracking-tight">
+                  {activeBlock === "view_myjobs" && "Benim İşlerim"}
+                  {activeBlock === "view_freejobs" && "Serbest İşler"}
                 </h2>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-                  {job.description || "Açıklama bulunamadı."}
+                <p className="mt-3 text-gray-600 leading-relaxed">
+                  {activeBlock === "view_myjobs" && "Size atanan işleri görüntüleyin ve durumlarını güncelleyin."}
+                  {activeBlock === "view_freejobs" && "Serbest işleri görüntüleyin ve kendinize atayın."}
                 </p>
 
-                {/* Aşama Çubuğu */}
-                <ol className="flex items-center w-full">
-                  {statusSteps.map((step, index) => {
-                    const isDone = getStatusIndex(job.status) >= index;
-
-                    return (
-                      <li
-                        key={step}
-                        className={`flex flex-col items-center w-full ${index !== statusSteps.length - 1
-                          ? "after:content-[''] after:w-full after:h-1 after:border-b after:border-4 after:inline-block " +
-                          (isDone
-                            ? "after:border-blue-600 dark:after:border-blue-400"
-                            : "after:border-gray-300 dark:after:border-gray-600")
-                          : ""
-                          }`}
-                      >
-                        {/* Step adı */}
-                        <span className="mb-1 text-xs text-gray-500 dark:text-gray-400">{step}</span>
-
-                        {/* Daire */}
-                        <span
-                          className={`flex items-center justify-center w-8 h-8 rounded-full shrink-0 ${isDone
-                            ? (index === statusSteps.length - 1
-                              ? "bg-green-600 text-white"    // Son tamamlanan adım yeşil
-                              : "bg-blue-600 text-white")    // Diğer tamamlananlar mavi
-                            : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-300"
-                            }`}
-
-                        >
-                          {isDone ? (
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="3"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          ) : (
-                            index + 1
-                          )}
-                        </span>
-
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.881 16H7.119a1 1 0 0 1-.772-1.636l4.881-5.927a1 1 0 0 1 1.544 0l4.88 5.927a1 1 0 0 1-.77 1.636Z" />
-                        </svg>
-
-                      </li>
-
-
-
-
-                    );
-
-
-                  })}
-
-
-
-
-
-
-                </ol>
-                <button
-                  onClick={() => handleState(job._id, job.status)} // TIKLANINCA çağırır
-
-                  className="inline-flex items-center justify-center w-10 h-10 bg-transparent border-none outline-none hover:bg-transparent focus:outline-none"
-                  style={{ all: "unset", cursor: "pointer" }}
-                >
-                  <svg
-                    className="w-10 h-10 text-gray-800 dark:text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m7 16 4-4-4-4m6 8 4-4-4-4"
-                    />
+                {/* Breadcrumb */}
+                <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
-                </button>
-
-
-
-
-                <br></br>
-                {job.assignedTo && (
-                  <div className="text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    İşi Gönderen : {job.createdBy.username}
-                  </div>
-                )}
+                  <span>Worker Panel</span>
+                  <span>/</span>
+                  <span className="text-teal-600 font-medium">
+                    {activeBlock === "view_myjobs" && "Benim İşlerim"}
+                    {activeBlock === "view_freejobs" && "Serbest İşler"}
+                  </span>
+                </div>
               </div>
             </div>
-          ))}
+          </header>
 
-          {/* Pagination */}
-          <nav className="flex items-center justify-center mt-4 mb-6">
-            <ul className="inline-flex -space-x-px text-sm">
-              {/* Önceki */}
-              <li>
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  Önceki
-                </button>
-              </li>
+          {/* Content Blocks */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-              {/* Sayfa Numaraları */}
-              {[...Array(totalPages)].map((_, i) => (
-                <li key={i}>
-                  <button
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-2 leading-tight border ${currentPage === i + 1
-                      ? "text-white bg-blue-600 border-blue-600"
-                      : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      }`}
-                  >
-                    {i + 1}
-                  </button>
-                </li>
-              ))}
-
-              {/* Sonraki */}
-              <li>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                  className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  Sonraki
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      )}
-
-
-      {activeBlock === "view_freejobs" && (
-        permissions.includes("view_freejobs") ? (
-          <div className="flex flex-col items-center pt-6 px-4 space-y-6">
-            <div className="w-full max-w-2xl flex justify-center">
-              {/* Kategori seçimi (select) */}
+            {/* My Jobs */}
+            {activeBlock === "view_myjobs" && (
+              <div className="space-y-6">
+                {/* Filters */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
                   <select
-              value={searchCategory}
-              onChange={(e) => setSearchCategory(e.target.value)}
-              className="w-40 py-3 px-4 text-sm text-gray-700 bg-white border border-gray-300 rounded-l-lg
-               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-               dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="title">BAŞLIK</option>
-              
-              <option value="content">İÇERİK</option>
-            </select>
-
-              {/* Arama kutusu */}
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg
-                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
+                    value={searchCategory}
+                    onChange={(e) => setSearchCategory(e.target.value)}
+                    className="px-4 py-2.5 bg-gradient-to-br from-white to-gray-50 border border-gray-300 rounded-lg text-sm shadow-sm hover:shadow focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 transition-all duration-200 font-medium text-gray-700 cursor-pointer"
                   >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    <option value="title">Başlık</option>
+                    <option value="content">İçerik</option>
+                  </select>
+                  <div className="relative flex-1">
+                    <input
+                      type="search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Ara..."
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                     />
-                  </svg>
-                </div>
-                <input
-                  type="search"
-                  id="default-search"
-                  value={searchTerm2}
-                  onChange={(e) => setSearchTerm2(e.target.value)}
-                 placeholder={`${searchCategory === "title" ? "Başlığa" : searchCategory === "content" ? "İçeriğe" : "İçeriğe"} göre ara...`}
-
-                  className="block w-full py-3 pl-10 pr-4 text-sm text-gray-900 border border-gray-300 rounded-r-lg
-                 bg-gray-50 focus:ring-blue-500 focus:border-blue-500
-                 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white
-                 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                />
-              </div>
-            </div>
-            {/* Kartlar */}
-            {jobsfree.map((job) => (
-              <div
-                key={job._id}
-                className="w-full max-w-4xl border border-gray-300 dark:border-gray-600 rounded-lg p-6 flex flex-col md:flex-row items-center bg-white dark:bg-gray-800 shadow-sm"
-              >
-                {/* Görsel */}
-                <div className="w-full md:w-1/2 flex justify-center items-center mb-4 md:mb-0">
-                  {(() => {
-                    const attachment = job.attachments?.[0];
-
-                    if (!attachment) {
-                      return (
-                        <img
-                          className="rounded-sm object-cover w-full h-48 sm:w-96"
-                          src="https://via.placeholder.com/300x200"
-                          alt="Varsayılan görsel"
-                        />
-                      );
-                    }
-
-                    const fileUrl = `data:${attachment.mimetype};base64,${attachment.data}`;
-
-                    if (attachment.mimetype.startsWith("image/")) {
-                      return (
-                        <img
-                          src={fileUrl}
-                          alt={attachment.filename}
-                          className="rounded-sm object-cover w-full h-48 sm:w-96"
-                        />
-                      );
-                    } else if (attachment.mimetype === "application/pdf") {
-                      return (
-                        <embed
-                          src={fileUrl}
-                          type="application/pdf"
-                          width="100%"
-                          height="400px"
-                          className="rounded-sm"
-                        />
-                      );
-                    } else {
-                      return (
-                        <div className="flex flex-col items-center justify-center w-full h-48 sm:w-96 bg-gray-100 dark:bg-gray-700 rounded-sm p-4 text-center">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{attachment.filename}</p>
-                          <a
-                            href={fileUrl}
-                            download={attachment.filename}
-                            className="text-blue-600 hover:underline dark:text-blue-400"
-                          >
-                            Dosyayı indir
-                          </a>
-                        </div>
-                      );
-                    }
-                  })()}
-                </div>
-
-                {/* Metin + Adım Çubuğu */}
-                <div className="w-full md:w-1/2 pl-0 md:pl-6">
-                  <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
-                    {job.title}
-                  </h2>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-                    {job.description || "Açıklama bulunamadı."}
-                  </p>
-
-                  <br />
-
-                  <div className="text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    İşi Gönderen : {job.createdBy.username}
-                  </div>
-
-                  <button
-                    onClick={() => handleJob(job._id)}
-                    className="inline-flex items-center justify-center w-10 h-10 bg-transparent border-none outline-none hover:bg-transparent focus:outline-none"
-                    style={{ all: "unset", cursor: "pointer" }}
-                  >
-                    <svg
-                      className="w-10 h-10 text-gray-800 dark:text-white transition-colors duration-200 hover:text-blue-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="grey"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Zm2 0V2h7a2 2 0 0 1 2 2v6.41A7.5 7.5 0 1 0 10.5 22H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Z"
-                        clipRule="evenodd"
-                      />
-                      <path
-                        fillRule="evenodd"
-                        d="M9 16a6 6 0 1 1 12 0 6 6 0 0 1-12 0Zm6-3a1 1 0 0 1 1 1v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 1 1 0-2h1v-1a1 1 0 0 1 1-1Z"
-                        clipRule="evenodd"
-                      />
+                    <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
 
-            {/* Pagination */}
-            <nav className="flex items-center justify-center mt-4 mb-6">
-              <ul className="inline-flex -space-x-px text-sm">
-                {/* Önceki */}
-                <li>
+                {/* Jobs List */}
+                <div className="space-y-4">
+                  {jobs.map((job) => (
+                    <div key={job._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                      <div className="flex flex-col md:flex-row">
+                        {/* Image/Attachment Section */}
+                        <div className="w-full md:w-64 h-48 md:h-auto bg-gray-100 flex-shrink-0 relative">
+                          {(() => {
+                            const attachment = job.attachments?.[0];
+                            if (!attachment) {
+                              return (
+                                <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-gray-50">
+                                  <svg className="w-12 h-12 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  <span className="text-sm text-gray-400 font-medium">Dosya Yok</span>
+                                </div>
+                              );
+                            }
+                            const fileUrl = `data:${attachment.mimetype};base64,${attachment.data}`;
+                            if (attachment.mimetype.startsWith("image/")) {
+                              return <img src={fileUrl} alt={attachment.filename} className="w-full h-full object-cover" />;
+                            } else {
+                              return (
+                                <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                                  <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                  <span className="text-xs text-gray-500 truncate w-full">{attachment.filename}</span>
+                                </div>
+                              );
+                            }
+                          })()}
+                        </div>
+
+                        {/* Content Section */}
+                        <div className="p-6 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">{job.title}</h3>
+                            <p className="text-gray-600 text-sm mb-6 line-clamp-2">{job.description || "Açıklama yok."}</p>
+                          </div>
+
+                          {/* Progress Steps */}
+                          <div className="mb-6">
+                            <div className="flex items-center justify-between w-full relative">
+                              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-100 -z-10"></div>
+                              {statusSteps.map((step, index) => {
+                                const isDone = getStatusIndex(job.status) >= index;
+                                return (
+                                  <div key={step} className="flex flex-col items-center bg-white px-2">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 ${isDone ? 'bg-teal-600 text-white shadow-lg shadow-teal-200' : 'bg-gray-100 text-gray-400'}`}>
+                                      {isDone ? '✓' : index + 1}
+                                    </div>
+                                    <span className={`text-[10px] mt-1 font-medium ${isDone ? 'text-teal-600' : 'text-gray-400'}`}>{step}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
+                          {/* Footer Info */}
+                          <div className="flex items-center justify-between border-t border-gray-50 pt-4">
+                            <div className="text-xs text-gray-500">
+                              <span className="font-semibold">İşi Gönderen:</span> {job.createdBy?.username}
+                            </div>
+                            <button
+                              onClick={() => handleState(job._id, job.status)}
+                              className="flex items-center gap-2 px-4 py-2 bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 transition-colors text-sm font-medium"
+                            >
+                              <span>Durumu İlerlet</span>
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center gap-2 mt-8">
                   <button
-                    disabled={currentPage2 === 1}
-                    onClick={() => setCurrentPage2((p) => Math.max(p - 1, 1))}
-                    className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Önceki
                   </button>
-                </li>
-
-                {/* Sayfa Numaraları */}
-                {[...Array(totalPages2)].map((_, i) => (
-                  <li key={i}>
-                    <button
-                      onClick={() => setCurrentPage2(i + 1)}
-                      className={`px-3 py-2 leading-tight border ${currentPage2 === i + 1
-                        ? "text-white bg-blue-600 border-blue-600"
-                        : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                        }`}
-                    >
-                      {i + 1}
-                    </button>
-                  </li>
-                ))}
-
-                {/* Sonraki */}
-                <li>
+                  <span className="px-4 py-2 text-sm text-gray-600">Sayfa {currentPage} / {totalPages}</span>
                   <button
-                    disabled={currentPage2 === totalPages2}
-                    onClick={() => setCurrentPage2((p) => Math.min(p + 1, totalPages2))}
-                    className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                    className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                   >
                     Sonraki
                   </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        ) : (
-          <div className="text-red-600 dark:text-red-400 text-center mt-6 text-lg font-semibold">
-            Bu sayfayı görüntüleme yetkiniz yok.
-          </div>
-        )
-      )}
+                </div>
+              </div>
+            )}
 
+            {/* Free Jobs */}
+            {activeBlock === "view_freejobs" && (
+              permissions.includes("view_freejobs") ? (
+                <div className="space-y-6">
+                  {/* Filters */}
+                  <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
+                    <select
+                      value={searchCategory2}
+                      onChange={(e) => setSearchCategory2(e.target.value)}
+                      className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                    >
+                      <option value="title">Başlık</option>
+                      <option value="content">İçerik</option>
+                    </select>
+                    <div className="relative flex-1">
+                      <input
+                        type="search"
+                        value={searchTerm2}
+                        onChange={(e) => setSearchTerm2(e.target.value)}
+                        placeholder="Ara..."
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                      />
+                      <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Jobs List */}
+                  <div className="space-y-4">
+                    {jobsfree.map((job) => (
+                      <div key={job._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                        <div className="flex flex-col md:flex-row">
+                          {/* Image/Attachment Section */}
+                          <div className="w-full md:w-64 h-48 md:h-auto bg-gray-100 flex-shrink-0 relative">
+                            {(() => {
+                              const attachment = job.attachments?.[0];
+                              if (!attachment) {
+                                return (
+                                  <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-gray-50">
+                                    <svg className="w-12 h-12 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-sm text-gray-400 font-medium">Dosya Yok</span>
+                                  </div>
+                                );
+                              }
+                              const fileUrl = `data:${attachment.mimetype};base64,${attachment.data}`;
+                              if (attachment.mimetype.startsWith("image/")) {
+                                return <img src={fileUrl} alt={attachment.filename} className="w-full h-full object-cover" />;
+                              } else {
+                                return (
+                                  <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                                    <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    <span className="text-xs text-gray-500 truncate w-full">{attachment.filename}</span>
+                                  </div>
+                                );
+                              }
+                            })()}
+                          </div>
+
+                          {/* Content Section */}
+                          <div className="p-6 flex-1 flex flex-col justify-between">
+                            <div>
+                              <h3 className="text-lg font-bold text-gray-900 mb-2">{job.title}</h3>
+                              <p className="text-gray-600 text-sm mb-4 line-clamp-2">{job.description || "Açıklama yok."}</p>
+                            </div>
+
+                            {/* Footer Info */}
+                            <div className="flex items-center justify-between border-t border-gray-50 pt-4">
+                              <div className="text-xs text-gray-500">
+                                <span className="font-semibold">İşi Gönderen:</span> {job.createdBy?.username}
+                              </div>
+                              <button
+                                onClick={() => handleJob(job._id)}
+                                className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-medium"
+                              >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                <span>İşi Al</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  <div className="flex justify-center gap-2 mt-8">
+                    <button
+                      disabled={currentPage2 === 1}
+                      onClick={() => setCurrentPage2(p => Math.max(p - 1, 1))}
+                      className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Önceki
+                    </button>
+                    <span className="px-4 py-2 text-sm text-gray-600">Sayfa {currentPage2} / {totalPages2}</span>
+                    <button
+                      disabled={currentPage2 === totalPages2}
+                      onClick={() => setCurrentPage2(p => Math.min(p + 1, totalPages2))}
+                      className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Sonraki
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+                  <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-red-800 mb-2">Erişim Engellendi</h3>
+                  <p className="text-red-600">Bu sayfayı görüntüleme yetkiniz yok.</p>
+                </div>
+              )
+            )}
+
+          </div>
+        </div>
+      </main>
     </div>
-
-
   );
 }
 

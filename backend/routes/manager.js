@@ -37,13 +37,18 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/add", upload.single("file"), requireLogin, requirePermission("add_jobs"), async (req, res) => {
   const { title, description, assignedTo } = req.body;
+  
+  // assignedTo boş string ise null'a çevir
+  const finalAssignedTo = assignedTo && assignedTo.trim() !== "" ? assignedTo : null;
+  
   const job = new Job({
     title,
     description,
-    assignedTo: assignedTo || null,
+    assignedTo: finalAssignedTo,
     department: req.session.user.department,
     createdBy: req.session.user.id,
-    status : "ASSIGNED",
+    // Eğer birine atanmışsa ASSIGNED, atanmamışsa OPEN
+    status: finalAssignedTo ? "ASSIGNED" : "OPEN",
     attachments: req.file ? [{
       data: req.file.buffer,
       filename: req.file.originalname,

@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const requirePermission = require("../middlewares/requirepermission.js");
 const requireLogin = require("../middlewares/requireLogin.js");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const Department = require("../models/Departments");
 const User = require("../models/Users.js");
 const Job = require("../models/Jobs.js");
@@ -198,6 +202,61 @@ router.get("/permissions_name", requireLogin, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "İzinler alınamadı" });
+  }
+});
+
+
+router.put("/update_password", requireLogin,  async (req, res) => {
+  try {
+    // 1. Girdileri al
+    const { oldPassword, newPassword} = req.body;
+    const userId = req.session.user.id // Middleware'den gelen user ID (veya req.session.user.id)
+
+
+
+
+
+   
+    // PasswordHash alanını getirdiğimizden emin oluyoruz (select: false ise .select('+passwordHash') eklenmeli)
+    // .select('+passwordHash') ekleyerek şifreyi açıkça istemelisin
+const user = await User.findById(userId).select('+passwordHash');
+
+    if (!user) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı." });
+    }
+
+    // 5. Eski Şifre Kontrolü (KRİTİK GÜVENLİK ADIMI)
+    const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Mevcut şifreniz hatalı." });
+    }
+
+    // 6. Eski Şifre ile Yeni Şifrenin Aynılığı Kontrolü
+    const isSameAsOld = await bcrypt.compare(newPassword, user.passwordHash);
+    if (isSameAsOld) {
+      return res.status(400).json({ message: "Yeni şifre eskisiyle aynı olamaz." });
+    }
+
+    // 7. Yeni Şifreyi Hashleme
+ 
+    const newHash = await bcrypt.hash(newPassword, 10);
+
+    // 8. Veritabanını Güncelleme
+    user.passwordHash = newHash;
+    
+    // (Opsiyonel) Şifre değiştirme tarihini loglayabilir veya token versiyonunu artırarak
+    // diğer cihazlardaki oturumları düşürebilirsiniz.
+    // user.tokenVersion += 1; 
+
+    await user.save();
+
+
+
+    res.json({ message: "Şifreniz başarıyla güncellendi." });
+
+  } catch (error) {
+    console.error("Şifre değiştirme hatası:", error);
+    res.status(500).json({ message: "İşlem sırasında bir hata oluştu." });
   }
 });
 module.exports = router;

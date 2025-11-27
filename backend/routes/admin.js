@@ -5,6 +5,7 @@ const requireLogin = require("../middlewares/requireLogin.js");
 const Department = require("../models/Departments");
 const User = require("../models/Users.js");
 const Job = require("../models/Jobs.js");
+const Permissions = require("../models/Permissions.js");
 
 router.get("/getalljobs", requireLogin, requirePermission("get_alljobs"), async (req, res) => {
   try {
@@ -145,12 +146,46 @@ router.put("/duzenle/:id", requireLogin, requirePermission("update_user"), async
 });
 
 
-
- 
-
+router.delete("/deletepermission/:id", requireLogin, requirePermission("delete_permission"), async (req, res) => {
 
 
+      try {
+    const id = req.params.id;
+    const deleted = await Permissions.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Yetki Bulunamadı" });
+    }
+    res.json({ message: "Yetki silindi" });
+  } catch (error) {
+    console.error("Silme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası." });
+  }
 
+
+});
+
+router.delete("/deletedepartment/:id", requireLogin, requirePermission("delete_department"), async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    // Önce departmanı bul
+    const department = await Department.findById(id);
+    if (!department) {
+      return res.status(404).json({ message: "Departman Bulunamadı" });
+    }
+    
+    // Bu departmandaki tüm kullanıcıları sil
+    await User.deleteMany({ department: id });
+    
+    // Departmanı sil
+    await Department.findByIdAndDelete(id);
+    
+    res.json({ message: "Departman ve ilgili kullanıcılar başarıyla silindi" });
+  } catch (error) {
+    console.error("Silme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası." });
+  }
+});
 
 
 

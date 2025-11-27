@@ -96,7 +96,9 @@ function Admin() {
   const changeBlockEmployee = () => setActiveBlock("add_employee");
   const changeBlockRole = () => setActiveBlock("add_role");
   const changeBlockDepartment = () => setActiveBlock("add_department");
+  const changeBlockDeleteDepartment = () => setActiveBlock("delete_department");
   const changeBlockPermission = () => setActiveBlock("add_permission");
+  const changeBlockDeletePermission = () => setActiveBlock("delete_permission");
   const changeBlockViewJobs = () => setActiveBlock("view_jobs");
   const changeBlockViewUsers = () => setActiveBlock("view_users");
 
@@ -345,6 +347,64 @@ function Admin() {
     }
   };
 
+  const handleDeletePermission = async (id) => {
+    const result = await MySwal.fire({
+      title: 'Emin misiniz?',
+      text: 'Bu yetkiyi silmek istediğinize emin misiniz?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Evet, sil',
+      cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#ef4444',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await axios.delete(`http://localhost:5000/admin/deletepermission/${id}`);
+
+      if (res.status === 200) {
+        setPermission(permissions.filter((perm) => perm._id !== id));
+        toast.success("Yetki başarıyla silindi.");
+      } else {
+        toast.alert("Silme işlemi başarısız oldu.");
+      }
+    } catch (error) {
+      console.error("Silme hatası:", error);
+      toast.warning("Silme sırasında hata oluştu.");
+    }
+  };
+
+  const handleDeleteDepartment = async (id) => {
+    const result = await MySwal.fire({
+      title: 'Emin misiniz?',
+      text: 'Bu departmanı silmek istediğinize emin misiniz?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Evet, sil',
+      cancelButtonText: 'Vazgeç',
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#ef4444',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await axios.delete(`http://localhost:5000/admin/deletedepartment/${id}`);
+
+      if (res.status === 200) {
+        setDepartments(departments.filter((dept) => dept._id !== id));
+        toast.success("Departman başarıyla silindi.");
+      } else {
+        toast.alert("Silme işlemi başarısız oldu.");
+      }
+    } catch (error) {
+      console.error("Silme hatası:", error);
+      toast.warning("Silme sırasında hata oluştu.");
+    }
+  };
+
   const handleLogout = (e) => {
     axios.post("http://localhost:5000/logout", {}, { withCredentials: true });
     localStorage.removeItem("userToken");
@@ -408,6 +468,21 @@ function Admin() {
             icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>}
           />
 
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-4 mt-8">Silme İşlemleri</div>
+
+          <NavItem
+            id="delete_department"
+            label="Departman Sil"
+            onClick={changeBlockDeleteDepartment}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>}
+          />
+          <NavItem
+            id="delete_permission"
+            label="Yetki Sil"
+            onClick={changeBlockDeletePermission}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>}
+          />
+
           <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 px-4 mt-8">Görüntüleme</div>
 
           <NavItem
@@ -462,9 +537,19 @@ function Admin() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                   )}
+                  {activeBlock === "delete_department" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  )}
                   {activeBlock === "add_permission" && (
                     <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                  )}
+                  {activeBlock === "delete_permission" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   )}
                   {activeBlock === "view_jobs" && (
@@ -486,7 +571,9 @@ function Admin() {
                   {activeBlock === "add_employee" && "Yeni Çalışan Ekle"}
                   {activeBlock === "add_role" && "Yeni Rol Tanımla"}
                   {activeBlock === "add_department" && "Departman Oluştur"}
+                  {activeBlock === "delete_department" && "Departman Sil"}
                   {activeBlock === "add_permission" && "Yetki Tanımla"}
+                  {activeBlock === "delete_permission" && "Yetki Sil"}
                   {activeBlock === "view_jobs" && "İş Listesi ve Durumları"}
                   {activeBlock === "view_users" && "Kullanıcı Yönetimi"}
                 </h2>
@@ -494,7 +581,9 @@ function Admin() {
                   {activeBlock === "add_employee" && "Sisteme yeni bir personel kaydı oluşturun."}
                   {activeBlock === "add_role" && "Kullanıcı rolleri ve yetkilerini yapılandırın."}
                   {activeBlock === "add_department" && "Organizasyon şemasına yeni bir birim ekleyin."}
+                  {activeBlock === "delete_department" && "Mevcut departmanları görüntüleyin ve silin."}
                   {activeBlock === "add_permission" && "Sistem genelinde yeni erişim izinleri tanımlayın."}
+                  {activeBlock === "delete_permission" && "Mevcut yetkileri görüntüleyin ve silin."}
                   {activeBlock === "view_jobs" && "Tüm işleri, atamaları ve ilerleme durumlarını takip edin."}
                   {activeBlock === "view_users" && "Sistemdeki tüm kullanıcıları görüntüleyin ve yönetin."}
                 </p>
@@ -510,7 +599,9 @@ function Admin() {
                     {activeBlock === "add_employee" && "Çalışan Ekle"}
                     {activeBlock === "add_role" && "Rol Ekle"}
                     {activeBlock === "add_department" && "Departman Ekle"}
+                    {activeBlock === "delete_department" && "Departman Sil"}
                     {activeBlock === "add_permission" && "Yetki Ekle"}
+                    {activeBlock === "delete_permission" && "Yetki Sil"}
                     {activeBlock === "view_jobs" && "İşler"}
                     {activeBlock === "view_users" && "Kullanıcılar"}
                   </span>
@@ -676,6 +767,64 @@ function Admin() {
               </div>
             )}
 
+            {/* Delete Department Block */}
+            {activeBlock === "delete_department" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-lg mx-auto">
+                <div className="text-center mb-8">
+                  <div className="mx-auto h-12 w-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">Departman Listesi</h3>
+                  <p className="mt-2 text-sm text-gray-500">Silmek istediğiniz departmanı seçin</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {departments.length === 0 ? (
+                    <div className="col-span-full text-center py-8 text-gray-500">
+                      <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      <p className="text-sm">Henüz departman bulunmamaktadır</p>
+                    </div>
+                  ) : (
+                    departments.map((dept) => {
+                      const employeeCount = user.filter(u => u.department?._id === dept._id).length;
+                      return (
+                        <div
+                          key={dept._id}
+                          className="flex flex-col items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors group relative"
+                        >
+                          <div className="flex flex-col items-center gap-3 w-full">
+                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                              </svg>
+                            </div>
+                            <div className="text-center w-full">
+                              <p className="text-sm font-medium text-gray-900 truncate">{dept.name}</p>
+                              <p className="text-xs text-gray-500">
+                                {employeeCount} Kişi
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteDepartment(dept._id)}
+                            className="absolute top-2 right-2 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                            title="Sil"
+                          >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Add Permission Form */}
             {activeBlock === "add_permission" && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-lg mx-auto">
@@ -705,6 +854,59 @@ function Admin() {
                     Ekle
                   </button>
                 </form>
+              </div>
+            )}
+
+            {/* Delete Permission Block */}
+            {activeBlock === "delete_permission" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-lg mx-auto">
+                <div className="text-center mb-8">
+                  <div className="mx-auto h-12 w-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">Yetki Listesi</h3>
+                  <p className="mt-2 text-sm text-gray-500">Silmek istediğiniz yetkiyi seçin</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {permissions.length === 0 ? (
+                    <div className="col-span-full text-center py-8 text-gray-500">
+                      <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                      <p className="text-sm">Henüz yetki bulunmamaktadır</p>
+                    </div>
+                  ) : (
+                    permissions.map((perm) => (
+                      <div
+                        key={perm._id}
+                        className="flex flex-col items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors group relative"
+                      >
+                        <div className="flex flex-col items-center gap-3 w-full">
+                          <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center">
+                            <svg className="w-5 h-5 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                            </svg>
+                          </div>
+                          <div className="text-center w-full">
+                            <p className="text-sm font-medium text-gray-900 truncate">{perm.name}</p>
+                            <p className="text-xs text-gray-500">ID: {perm._id.substring(0, 8)}...</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleDeletePermission(perm._id)}
+                          className="absolute top-2 right-2 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100"
+                          title="Sil"
+                        >
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             )}
 

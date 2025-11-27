@@ -23,6 +23,7 @@ function Manager() {
   const [activeBlock, setActiveBlock] = useState("add_job");
   const changeBlockAddJob = () => setActiveBlock("add_job");
   const changeBlockViewJobs = () => setActiveBlock("view_job");
+  const changeBlockChangePassword = () => setActiveBlock("change_password");
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [description, setDescription] = useState("");
@@ -32,6 +33,11 @@ function Manager() {
   const [jobs, setJobs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Password change states
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     axios
@@ -222,6 +228,12 @@ function Manager() {
             onClick={changeBlockViewJobs}
             icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>}
           />
+          <NavItem
+            id="change_password"
+            label="Şifre Değiştir"
+            onClick={changeBlockChangePassword}
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>}
+          />
         </div>
 
         <div className="p-4 border-t border-gray-100">
@@ -257,6 +269,11 @@ function Manager() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
                   )}
+                  {activeBlock === "change_password" && (
+                    <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    </svg>
+                  )}
                 </div>
               </div>
 
@@ -265,10 +282,12 @@ function Manager() {
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-teal-900 to-cyan-900 bg-clip-text text-transparent tracking-tight">
                   {activeBlock === "add_job" && "Yeni İş Ekle"}
                   {activeBlock === "view_job" && "İş Listesi ve Durumları"}
+                  {activeBlock === "change_password" && "Şifre Değiştir"}
                 </h2>
                 <p className="mt-3 text-gray-600 leading-relaxed">
                   {activeBlock === "add_job" && "Çalışanlarınıza yeni görevler atayın ve dosya ekleyin."}
                   {activeBlock === "view_job" && "Tüm işleri, atamaları ve ilerleme durumlarını takip edin."}
+                  {activeBlock === "change_password" && "Hesap güvenliğiniz için şifrenizi güncelleyin."}
                 </p>
 
                 {/* Breadcrumb */}
@@ -281,6 +300,7 @@ function Manager() {
                   <span className="text-teal-600 font-medium">
                     {activeBlock === "add_job" && "İş Ekle"}
                     {activeBlock === "view_job" && "İşler"}
+                    {activeBlock === "change_password" && "Şifre Değiştir"}
                   </span>
                 </div>
               </div>
@@ -527,6 +547,119 @@ function Manager() {
                     Sonraki
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Change Password */}
+            {activeBlock === "change_password" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+
+                  // Validation
+                  if (!oldPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
+                    toast.error("Tüm alanları doldurun.");
+                    return;
+                  }
+
+                  if (newPassword !== confirmPassword) {
+                    toast.error("Yeni şifreler eşleşmiyor.");
+                    return;
+                  }
+
+                  if (newPassword.length < 6) {
+                    toast.error("Yeni şifre en az 6 karakter olmalıdır.");
+                    return;
+                  }
+
+                  try {
+                    await axios.put(
+                      "http://localhost:5000/worker/update_password",
+                      {
+                        oldPassword,
+                        newPassword
+                      },
+                      { withCredentials: true }
+                    );
+                    toast.success("Şifreniz başarıyla değiştirildi!");
+                    setOldPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  } catch (err) {
+                    console.error(err);
+                    toast.error(err.response?.data?.message || "Şifre değiştirilemedi.");
+                  }
+                }} className="space-y-6">
+                  <div>
+                    <label htmlFor="oldPassword" className="block mb-2 text-sm font-medium text-gray-700">
+                      Eski Şifre
+                    </label>
+                    <input
+                      id="oldPassword"
+                      name="oldPassword"
+                      type="password"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                      placeholder="Mevcut şifrenizi giriniz"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="newPassword" className="block mb-2 text-sm font-medium text-gray-700">
+                      Yeni Şifre
+                    </label>
+                    <input
+                      id="newPassword"
+                      name="newPassword"
+                      type="password"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                      placeholder="Yeni şifrenizi giriniz"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-700">
+                      Yeni Şifre (Tekrar)
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+                      placeholder="Yeni şifrenizi tekrar giriniz"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+
+                  {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                    <p className="text-sm text-red-600 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Şifreler eşleşmiyor
+                    </p>
+                  )}
+
+                  {newPassword && confirmPassword && newPassword === confirmPassword && (
+                    <p className="text-sm text-green-600 flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Şifreler eşleşiyor
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                  >
+                    Şifreyi Değiştir
+                  </button>
+                </form>
               </div>
             )}
 
